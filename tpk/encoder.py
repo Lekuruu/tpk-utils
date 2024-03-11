@@ -2,22 +2,23 @@
 from .streams import StreamOut
 
 import zlib
+import json
 
 class TPKEncoder:
-    def __init__(self, atlas: bytes, json: str, scale: str = '{}', interval: int = 67) -> None:
+    def __init__(self, atlas: bytes, json: dict) -> None:
         self.stream = StreamOut()
-        self.interval = interval
         self.atlas = atlas
-        self.scale = scale
         self.json = json
+        self.interval = 67 # TODO
+        self.scale = {}    # TODO
 
     @property
     def sections(self) -> dict:
         return {
             "i": self.interval.to_bytes(4, 'big'),
             "t": self.atlas,
-            "j": bytes(self.json, 'utf-8'),
-            "m": bytes(self.scale, 'utf-8')
+            "j": bytes(json.dumps(self.json), 'utf-8'),
+            "m": bytes(json.dumps(self.scale), 'utf-8')
         }
 
     @classmethod
@@ -29,8 +30,8 @@ class TPKEncoder:
         with open(atlas_filename, 'rb') as file:
             atlas = file.read()
         with open(json_filename, 'r') as file:
-            json = file.read()
-        return cls(atlas, json)
+            data = file.read()
+        return cls(atlas, json.loads(data))
 
     def to_bytes(self) -> bytes:
         self.stream.write(b"KAPD")
