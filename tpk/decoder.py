@@ -10,22 +10,10 @@ import zlib
 class TPKDecoder:
     def __init__(self) -> None:
         self.sections: Dict[str, bytes] = {}
-
-    @property
-    def atlas(self) -> bytes:
-        return self.sections.get('t', b'')
-
-    @property
-    def interval(self) -> int:
-        return struct.unpack('>I', self.sections.get('i', b'\x00\x00\x00\x00'))[0]
-
-    @property
-    def json(self) -> dict:
-        return json.loads(self.sections.get('j', '{}').decode())
-
-    @property
-    def scale(self) -> dict:
-        return json.loads(self.sections.get('m', '{}').decode())
+        self.atlas: bytes = b''
+        self.interval: int = 67
+        self.json: dict = {}
+        self.scale: dict = {}
 
     @classmethod
     def from_file(cls, filename: str) -> "TPKDecoder":
@@ -61,3 +49,8 @@ class TPKDecoder:
             section_names[index]: stream.read(size)
             for index, size in enumerate(sizes)
         }
+
+        self.atlas = self.sections.get('t', b'')
+        self.json = json.loads(self.sections.get('j', '{}').decode())
+        self.scale = json.loads(self.sections.get('m', '{}').decode())
+        self.interval = struct.unpack('>I', self.sections.get('i', b'\x00\x00\x00C'))[0]
