@@ -31,7 +31,4 @@ pip-delete-this-directory.txt
 
 # PyCharm
 .idea/
-
-*.json
-*.png
 *.tpk
