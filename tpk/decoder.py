@@ -54,3 +54,15 @@ class TPKDecoder:
         self.json = json.loads(self.sections.get('j', '{}').decode())
         self.scale = json.loads(self.sections.get('m', '{}').decode())
         self.interval = struct.unpack('>I', self.sections.get('i', b'\x00\x00\x00C'))[0]
+
+    def export_section(self, section: str, path: str) -> None:
+        with open(path, "wb") as f:
+            f.write(self.sections[section])
+
+    def export_atlas(self, path: str) -> None:
+        with open(path, "wb") as f:
+            f.write(self.atlas)
+
+    def export_json(self, path: str) -> None:
+        with open(path, "w") as f:
+            json.dump(self.json, f, indent=4)
